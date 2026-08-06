@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token,jwt_required, get_jwt_identity
 from extensions import db, bcrypt
 from models import User
 
@@ -93,3 +93,20 @@ def login():
         "role": user.role
     }
     }), 200
+
+# ---------------- PROFILE ---------------- #
+@auth_bp.route("/profile", methods=["GET"])
+@jwt_required()
+def profile():
+
+    user_id = get_jwt_identity()
+
+    user = User.query.get(int(user_id))
+
+    return jsonify({
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "role": user.role,
+        "phone": user.phone
+    })
