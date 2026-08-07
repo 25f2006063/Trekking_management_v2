@@ -1,15 +1,18 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
-from routes.auth import auth_bp
-from config import Config
-from extensions import db, bcrypt, jwt 
 
-from models import User, Trek, Booking
+from config import Config
+from extensions import db, bcrypt, jwt
+
+from routes.auth import auth_bp
+from routes.admin import admin_bp
+from routes.user import user_bp
+from routes.staff import staff_bp
+from models import User,Trek,Booking
 
 
 def create_app():
     app = Flask(__name__)
-
     app.config.from_object(Config)
 
     CORS(app)
@@ -19,6 +22,9 @@ def create_app():
     jwt.init_app(app)
 
     app.register_blueprint(auth_bp)
+    app.register_blueprint(admin_bp)
+    app.register_blueprint(user_bp)
+    app.register_blueprint(staff_bp)
 
     with app.app_context():
         db.create_all()
@@ -26,15 +32,12 @@ def create_app():
         admin = User.query.filter_by(email="admin@trek.com").first()
 
         if not admin:
-            hashed_password = bcrypt.generate_password_hash(
-                "admin123"
-            ).decode("utf-8")
+            hashed_password = bcrypt.generate_password_hash("admin123").decode("utf-8")
 
             admin = User(
                 name="Administrator",
                 email="admin@trek.com",
                 password=hashed_password,
-                phone="9999999999",
                 role="admin"
             )
 
@@ -45,9 +48,7 @@ def create_app():
 
     @app.route("/")
     def home():
-        return jsonify({
-            "message": "Trekking Management API Running"
-        })
+        return jsonify({"message": "Trekking Management API Running"})
 
     return app
 

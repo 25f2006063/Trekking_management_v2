@@ -36,4 +36,35 @@ class Trek(db.Model):
         "Booking",
         back_populates="trek",
         cascade="all, delete-orphan"
+    ) 
+    status = db.Column(
+        db.String(20),
+        nullable=False,
+        default="Pending"
+    ) 
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "location": self.location,
+            "description": self.description,
+            "difficulty": self.difficulty,
+            "price": self.price,
+            "duration": self.duration,
+            "total_slots": self.total_slots,
+            "available_slots": self.available_slots,
+            "start_date": self.start_date.isoformat(),
+            "end_date": self.end_date.isoformat(),
+            "image": self.image,
+            "status": self.status,
+            "created_at": self.created_at.isoformat()
+        } 
+
+        return jsonify(trek.to_dict())   
+
+    assigned_staff_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        nullable=True
     )
