@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
+from flask import request
 
 from config import Config
 from extensions import db, bcrypt, jwt
@@ -15,7 +16,13 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    CORS(app)
+
+    CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}}) 
+
+    @app.before_request
+    def handle_preflight():
+        if request.method == "OPTIONS":
+            return jsonify({}), 200
 
     db.init_app(app)
     bcrypt.init_app(app)
@@ -49,11 +56,14 @@ def create_app():
     @app.route("/")
     def home():
         return jsonify({"message": "Trekking Management API Running"})
-
+    print(app.url_map)
     return app
 
 
-app = create_app()
+app = create_app()  
+
+
+
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)

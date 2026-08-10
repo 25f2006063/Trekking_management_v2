@@ -3,14 +3,10 @@
   <router-view />
 </template>
 
-<script setup>
+<script>
 import Navbar from "./components/Navbar.vue";
-</script>
 
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f5f7f6;
-}
-</style>
+export default {
+  components: { Navbar },
+};
+</script>

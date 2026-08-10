@@ -45,7 +45,8 @@ def register():
         name=name,
         email=email,
         password=hashed_password,
-        phone=phone
+        phone=phone,
+        role="user"
     ) 
 
     db.session.add(user)
@@ -71,27 +72,30 @@ def login():
             "message": "Invalid email or password"
         }), 401
 
-    if not bcrypt.check_password_hash(
-        user.password,
-        password
-    ):
+    if not bcrypt.check_password_hash(user.password, password):
         return jsonify({
             "message": "Invalid email or password"
         }), 401
+
+    # 🔥 ADD THIS BLOCK CHECK
+    if user.is_blocked:
+        return jsonify({
+            "message": "Your account is blacklisted. Contact admin."
+        }), 403
 
     access_token = create_access_token(
         identity=str(user.id)
     )
 
     return jsonify({
-    "message": "Login successful",
-    "access_token": access_token,
-    "user": {
-        "id": user.id,
-        "name": user.name,
-        "email": user.email,
-        "role": user.role
-    }
+        "message": "Login successful",
+        "access_token": access_token,
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "role": user.role
+        }
     }), 200
 
 # ---------------- PROFILE ---------------- #

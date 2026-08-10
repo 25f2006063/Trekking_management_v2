@@ -14,13 +14,18 @@ class User(db.Model):
 
     password = db.Column(db.String(255), nullable=False)
 
-    phone = db.Column(db.String(15))
+    phone = db.Column(db.String(15), nullable=True)
 
     role = db.Column(db.String(20), nullable=False, default="user")
 
     is_active = db.Column(db.Boolean, default=True)
 
+    # approved = db.Column(db.Boolean, default=True)
+
+    is_blocked = db.Column(db.Boolean, default=False)
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 
     bookings = db.relationship(
         "Booking",
