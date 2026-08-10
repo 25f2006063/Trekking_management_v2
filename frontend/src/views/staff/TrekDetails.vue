@@ -1,7 +1,7 @@
 <template>
   <div class="container mt-4">
 
-    <!-- 🔙 BACK -->
+    
     <button
       class="btn btn-secondary mb-3"
       @click="$router.push('/staff/treks')"
@@ -21,8 +21,8 @@
 
       <tbody>
         <tr v-for="b in bookings" :key="b.id">
-          <td>{{ b.user_name }}</td>
-          <td>{{ b.user_email }}</td>
+          <td>{{ b.name }}</td>
+          <td>{{ b.email }}</td>
         </tr>
 
         <tr v-if="bookings.length === 0">
@@ -69,8 +69,6 @@ export default {
         const token = localStorage.getItem("token");
         const id = this.$route.params.id;
 
-        if (!id) return;
-
         const res = await axios.get(
           `http://127.0.0.1:5000/api/staff/treks/${id}/bookings`,
           {
@@ -78,7 +76,13 @@ export default {
           }
         );
 
-        this.bookings = res.data;
+        // ✅ FIX HERE
+        this.bookings = res.data.bookings || res.data;
+
+        // ✅ ALSO SET STATUS FROM BACKEND
+        if (res.data.status) {
+          this.status = res.data.status;
+        }
 
       } catch (err) {
         console.error(err);

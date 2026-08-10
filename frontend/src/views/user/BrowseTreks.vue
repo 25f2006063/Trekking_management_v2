@@ -64,7 +64,7 @@ export default {
         const token = localStorage.getItem("token");
 
         await axios.post(
-          "http://127.0.0.1:5000/api/bookings",
+          "http://127.0.0.1:5000/api/user/bookings",
           { trek_id: trekId },
           {
             headers: { Authorization: `Bearer ${token}` }
@@ -84,7 +84,7 @@ export default {
         const token = localStorage.getItem("token");
 
         await axios.delete(
-          `http://127.0.0.1:5000/api/bookings/${trekId}`,
+          `http://127.0.0.1:5000/api/user/bookings/${trekId}`,
           {
             headers: { Authorization: `Bearer ${token}` }
           }

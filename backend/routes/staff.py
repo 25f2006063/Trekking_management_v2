@@ -15,18 +15,25 @@ staff_bp = Blueprint("staff", __name__, url_prefix="/api/staff")
 def get_assigned_treks():
 
     user_id = int(get_jwt_identity())
-
     treks = Trek.query.filter_by(assigned_staff_id=user_id).all()
 
     result = []
 
-    treks = Trek.query.filter_by(assigned_staff_id=user_id).all()
+    for t in treks:
+        participants = Booking.query.filter_by(trek_id=t.id).count()
+    result.append({
+        "id": t.id,
+        "title": t.title,
+        "location": t.location,   # ✅ ADD THIS
+        "start_date": t.start_date.isoformat(),
+        "end_date": t.end_date.isoformat(),
+        "participants": participants,
+        "available_slots": t.available_slots,
+        "total_slots": t.total_slots,
+        "status": t.status
+    })
 
-    result = [t.to_dict() for t in treks]
-
-    return jsonify(result), 200
-
-
+    return jsonify({"treks": result}), 200
 
 # ---------------- VIEW BOOKINGS FOR TREK ----------------
 @staff_bp.route("/treks/<int:trek_id>/bookings", methods=["GET"])
@@ -35,7 +42,6 @@ def get_assigned_treks():
 def get_trek_bookings(trek_id):
 
     user_id = int(get_jwt_identity())
-
     trek = Trek.query.get(trek_id)
 
     if not trek or trek.assigned_staff_id != user_id:
@@ -43,45 +49,74 @@ def get_trek_bookings(trek_id):
 
     bookings = Booking.query.filter_by(trek_id=trek_id).all()
 
-    return jsonify([b.to_dict() for b in bookings]), 200
+    result = []
+
+    for b in bookings:
+        result.append({
+            "id": b.id,
+            "name": b.user.name if b.user else "N/A",
+            "email": b.user.email if b.user else "N/A"
+        })
+
+    return jsonify({
+        "bookings": result,
+        "status": trek.status
+    }), 200
 
 # ---------------- TREK STATUS ----------------
 @staff_bp.route("/treks/<int:trek_id>/status", methods=["PUT"])
 @jwt_required()
 @staff_required
 def update_status(trek_id):
+
     trek = Trek.query.get(trek_id)
 
     if not trek:
         return jsonify({"message": "Not found"}), 404
 
     data = request.get_json()
-
-    trek.status = data.get("status")   # ✅ dynamic
+    trek.status = data.get("status")
 
     db.session.commit()
 
     return jsonify({"message": "Updated"}), 200
 
 
-@staff_bp.route("/dashboard", methods=["GET"])
+@staff_bp.route("/dashboard")
 @jwt_required()
-@staff_required
 def staff_dashboard():
-    user_id = get_jwt_identity()
 
-    treks = Trek.query.filter_by(assigned_staff_id=user_id).all()
+    staff_id = int(get_jwt_identity())
 
-    total_treks = len(treks)
+    treks = Trek.query.filter_by(assigned_staff_id=staff_id).all()
 
-    ongoing = len([t for t in treks if t.status.lower() == "ongoing"])
+    data = []
+    total_participants = 0
+    ongoing = 0
 
-    total_participants = sum(
-        Booking.query.filter_by(trek_id=t.id).count() for t in treks
-    )
+    for t in treks:
+        participants = Booking.query.filter_by(trek_id=t.id).count()
+        total_participants += participants
+
+        if t.status == "approved":
+            ongoing += 1
+
+        data.append({
+            "id": t.id,
+            "title": t.title,
+            "start_date": t.start_date.isoformat(),
+            "end_date": t.end_date.isoformat(),
+            "status": t.status,
+            "available_slots": t.available_slots,
+            "total_slots": t.total_slots,
+            "participants": participants
+        })
 
     return jsonify({
-        "assigned_treks": total_treks,
-        "ongoing_treks": ongoing,
-        "total_participants": total_participants
-    }), 200
+        "treks": data,
+        "stats": {
+            "assigned_treks": len(data),
+            "total_participants": total_participants,
+            "ongoing_treks": ongoing
+        }
+    })

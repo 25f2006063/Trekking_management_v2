@@ -62,7 +62,7 @@ export default {
         }
       );
 
-      this.treks = res.data;
+      this.treks = res.data.treks || res.data;
 
     } catch (err) {
       console.error(err);

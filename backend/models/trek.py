@@ -53,6 +53,6 @@ class Trek(db.Model):
             "end_date": self.end_date.isoformat(),
             "image": self.image,
             "status": self.status,
-            "assigned_staff_id": self.assigned_staff_id,  # 🔥 ADD THIS
+            "assigned_staff_id": self.assigned_staff_id, 
             "created_at": self.created_at.isoformat()
         }

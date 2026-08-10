@@ -43,14 +43,14 @@ const routes = [
 
   // USER (WITH LAYOUT)
   {
-  path: "/user",
-  component: UserLayout,
-  children: [
-    { path: "dashboard", component: UserDashboard },
-    { path: "treks", component: BrowseTreks },
-    { path: "bookings", component: MyBookings }, // ✅ FIXED
-  ]
-},
+    path: "/user",
+    component: UserLayout,
+    children: [
+      { path: "dashboard", component: UserDashboard },
+      { path: "treks", component: BrowseTreks },
+      { path: "bookings", component: MyBookings }, 
+    ]
+  },
 
   // STAFF (WITH LAYOUT)
   // STAFF (FIXED)

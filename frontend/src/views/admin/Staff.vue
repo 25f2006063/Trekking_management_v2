@@ -34,9 +34,6 @@
       </div>
 
       <!-- STAFF LIST -->
-      <div v-if="errorMessage" class="alert alert-danger">
-        {{ errorMessage }}
-      </div>
       <div class="col-md-7">
         <div class="card p-3 shadow-sm">
 
@@ -112,7 +109,6 @@ export default {
     return {
       staff: [],
       search: "",
-      errorMessage: "", 
       form: {
         name: "",
         email: "",
