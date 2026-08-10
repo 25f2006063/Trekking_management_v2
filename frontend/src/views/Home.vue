@@ -8,9 +8,7 @@
         </p>
 
         <div class="mt-4">
-          <router-link to="/user/treks" class="btn btn-success btn-lg me-3">
-            Explore Treks
-          </router-link>
+          
 
           <router-link to="/login" class="btn btn-outline-light btn-lg">
             Login

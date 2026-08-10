@@ -9,7 +9,6 @@
           <th>Location</th>
           <th>Dates</th>
           <th>Status</th>
-          <th>Action</th>
         </tr>
       </thead>
 
@@ -28,14 +27,7 @@
             </span>
           </td>
 
-          <td>
-            <button
-              class="btn btn-danger btn-sm"
-              @click="cancelBooking(b.trek_id)"
-            >
-              Cancel
-            </button>
-          </td>
+        
         </tr>
 
         <tr v-if="bookings.length === 0">
