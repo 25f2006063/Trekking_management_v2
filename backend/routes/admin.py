@@ -168,8 +168,10 @@ def create_staff():
     staff = User(
         name=data["name"],
         email=data["email"],
+        phone=data.get("phone"),
         password=hashed,
-        role="staff",
+        role="staff"
+        
         # status=data.get("status", "active")
     )
 
